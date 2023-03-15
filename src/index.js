@@ -28,7 +28,7 @@ export async function run() {
   try {
     let tmateExecutable = "tmate"
     if (core.getInput("install-dependencies") !== "false") {
-      core.debug("Installing dependencies")
+      console.log("Installing dependencies")
       if (process.platform === "darwin") {
         await execShellCommand('brew install tmate');
       } else if (process.platform === "win32") {
@@ -36,7 +36,7 @@ export async function run() {
       } else {
         const optionalSudoPrefix = useSudoPrefix() ? "sudo " : "";
         const distro = await getLinuxDistro();
-        core.debug("linux distro: [" + distro + "]");
+        console.log("linux distro: [" + distro + "]");
         if (distro === "alpine") {
           // for set -e workaround, we need to install bash because alpine doesn't have it
           await execShellCommand(optionalSudoPrefix + 'apk add openssh-client xz bash');
@@ -45,7 +45,7 @@ export async function run() {
           await execShellCommand(optionalSudoPrefix + 'pacman -Syu --noconfirm xz openssh');
         } else if (distro === "fedora") {
           await execShellCommand(optionalSudoPrefix + 'dnf install -y xz openssh');
-        } else {
+        } else if (distro === "ubuntu") {
           await execShellCommand(optionalSudoPrefix + 'apt-get update');
           await execShellCommand(optionalSudoPrefix + 'apt-get install -y openssh-client xz-utils');
         }
@@ -64,18 +64,18 @@ export async function run() {
         await execShellCommand(`tar x -C ${tmateDir} -f ${tmateReleaseTar} --strip-components=1`)
         fs.unlinkSync(tmateReleaseTar)
       }
-      core.debug("Installed dependencies successfully");
+      console.log("Installed dependencies successfully");
     }
 
     if (process.platform === "win32") {
       tmateExecutable = 'CHERE_INVOKING=1 tmate'
     } else {
-      core.debug("Generating SSH keys")
+      console.log("Generating SSH keys")
       fs.mkdirSync(path.join(os.homedir(), ".ssh"), { recursive: true })
       try {
         await execShellCommand(`echo -e 'y\n'|ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa`);
       } catch { }
-      core.debug("Generated SSH-Key successfully")
+      console.log("Generated SSH-Key successfully")
     }
 
     let newSessionExtra = ""
@@ -122,29 +122,29 @@ export async function run() {
       }
     }
 
-    core.debug("Creating new session")
+    console.log("Creating new session")
     await execShellCommand(`${tmate} ${newSessionExtra} ${setDefaultCommand} new-session -d`);
     await execShellCommand(`${tmate} wait tmate-ready`);
-    core.debug("Created new session successfully")
+    console.log("Created new session successfully")
 
-    core.debug("Fetching connection strings")
+    console.log("Fetching connection strings")
     const tmateSSH = await execShellCommand(`${tmate} display -p '#{tmate_ssh}'`);
     const tmateWeb = await execShellCommand(`${tmate} display -p '#{tmate_web}'`);
 
-    core.debug("Entering main loop")
+    console.log("Entering main loop")
     while (true) {
       if (tmateWeb) {
-        core.info(`Web shell: ${tmateWeb}`);
+        console.log(`Web shell: ${tmateWeb}`);
       }
-      core.info(`SSH: ${tmateSSH}`);
+      console.log(`SSH: ${tmateSSH}`);
 
       if (continueFileExists()) {
-        core.info("Exiting debugging session because the continue file was created")
+        console.log("Exiting debugging session because the continue file was created")
         break
       }
 
       if (didTmateQuit()) {
-        core.info("Exiting debugging session 'tmate' quit")
+        console.log("Exiting debugging session 'tmate' quit")
         break
       }
 

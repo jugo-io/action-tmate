@@ -40,9 +40,9 @@ describe('Tmate GitHub integration', () => {
     execShellCommand.mockReturnValue(Promise.resolve(customConnectionString))
     await run()
     expect(execShellCommand).toHaveBeenNthCalledWith(1, "pacman -S --noconfirm tmate");
-    expect(core.info).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
+    expect(console.log).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
   });
   it('should handle the main loop for Windows without dependency installation', async () => {
     Object.defineProperty(process, "platform", {
@@ -53,9 +53,9 @@ describe('Tmate GitHub integration', () => {
     execShellCommand.mockReturnValue(Promise.resolve(customConnectionString))
     await run()
     expect(execShellCommand).not.toHaveBeenNthCalledWith(1, "pacman -S --noconfirm tmate");
-    expect(core.info).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
+    expect(console.log).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
   });
   it('should handle the main loop for linux', async () => {
     Object.defineProperty(process, "platform", {
@@ -66,9 +66,9 @@ describe('Tmate GitHub integration', () => {
     execShellCommand.mockReturnValue(Promise.resolve(customConnectionString))
     await run()
     expect(execShellCommand).toHaveBeenNthCalledWith(1, "sudo apt-get update")
-    expect(core.info).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
+    expect(console.log).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
   });
   it('should handle the main loop for linux without sudo', async () => {
     Object.defineProperty(process, "platform", {
@@ -79,9 +79,9 @@ describe('Tmate GitHub integration', () => {
     execShellCommand.mockReturnValue(Promise.resolve(customConnectionString))
     await run()
     expect(execShellCommand).toHaveBeenNthCalledWith(1, "apt-get update")
-    expect(core.info).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
+    expect(console.log).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
   });
   it('should handle the main loop for linux without installing dependencies', async () => {
     Object.defineProperty(process, "platform", {
@@ -92,9 +92,9 @@ describe('Tmate GitHub integration', () => {
     execShellCommand.mockReturnValue(Promise.resolve(customConnectionString))
     await run()
     expect(execShellCommand).not.toHaveBeenNthCalledWith(1, "apt-get update")
-    expect(core.info).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
-    expect(core.info).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
+    expect(console.log).toHaveBeenNthCalledWith(1, `Web shell: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(2, `SSH: ${customConnectionString}`);
+    expect(console.log).toHaveBeenNthCalledWith(3, "Exiting debugging session because the continue file was created");
   });
   it('should install tmate via brew for darwin', async () => {
     Object.defineProperty(process, "platform", {
@@ -122,14 +122,14 @@ describe('Tmate GitHub integration', () => {
   });
   it('should validate correct tmate options', async () => {
     // Check for the happy path first.
-    core.getInput.mockImplementation(function(opt) {
-        switch (opt) {
-          case "tmate-server-host": return "ssh.tmate.io";
-          case "tmate-server-port": return "22";
-          case "tmate-server-rsa-fingerprint": return "SHA256:Hthk2T/M/Ivqfk1YYUn5ijC2Att3+UPzD7Rn72P5VWs";
-          case "tmate-server-ed25519-fingerprint": return "SHA256:jfttvoypkHiQYUqUCwKeqd9d1fJj/ZiQlFOHVl6E9sI";
-          default: return "";
-        }
+    core.getInput.mockImplementation(function (opt) {
+      switch (opt) {
+        case "tmate-server-host": return "ssh.tmate.io";
+        case "tmate-server-port": return "22";
+        case "tmate-server-rsa-fingerprint": return "SHA256:Hthk2T/M/Ivqfk1YYUn5ijC2Att3+UPzD7Rn72P5VWs";
+        case "tmate-server-ed25519-fingerprint": return "SHA256:jfttvoypkHiQYUqUCwKeqd9d1fJj/ZiQlFOHVl6E9sI";
+        default: return "";
+      }
     })
 
     await run()
@@ -152,17 +152,17 @@ describe('Tmate GitHub integration', () => {
     expect(match[1]).toEqual("ssh.tmate.io");
   });
   it('should fail to validate wrong tmate options', async () => {
-    core.getInput.mockImplementation(function(opt) {
-        switch (opt) {
-          case "tmate-server-host": return "not/a/valid/hostname";
-          default: return "";
-        }
+    core.getInput.mockImplementation(function (opt) {
+      switch (opt) {
+        case "tmate-server-host": return "not/a/valid/hostname";
+        default: return "";
+      }
     })
 
     await run()
 
     expect(core.setFailed).toHaveBeenCalledWith(
-        Error("Invalid value for 'tmate-server-host': 'not/a/valid/hostname'")
-      )
+      Error("Invalid value for 'tmate-server-host': 'not/a/valid/hostname'")
+    )
   });
 });

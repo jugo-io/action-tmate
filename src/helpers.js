@@ -17,7 +17,7 @@ export const useSudoPrefix = () => {
  * @returns {Promise<string>}
  */
 export const execShellCommand = (cmd) => {
-  core.debug(`Executing shell command: [${cmd}]`)
+  console.log(`Executing shell command: [${cmd}]`)
   return new Promise((resolve, reject) => {
     const proc = process.platform !== "win32" ?
       spawn(cmd, [], {
